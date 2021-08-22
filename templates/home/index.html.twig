@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calculadora de capitalización
+{% endblock %}
+
+{% block body %}
+	<div class="">
+		<div class="jumbotron">
+			<h1 class="display-4">Calculadora de capitalización para Ahorrar</h1>
+			<p class="lead">Usa esta práctica calculadora para calcular cuanto necesitas ahorrar mensualmente para alcanzar tu objetivo.</p>
+			<hr class="my-4">
+			<p>Adicionalmente puedes registrarte, guardar tus calculos y activar los recordatorios para que ahorres.</p>
+			<a class="btn btn-primary btn-lg" href="{{ url('app_register') }}" role="button">Iniciar sesión</a>
+			<a class="btn btn-primary btn-lg" href="{{ url('app_login') }}" role="button">Registrarme</a>
+		</div>
+	</div>
+
+	<div class="pb-5">
+		<div class="card">
+			<div class="card-header">
+				Calculadora de capitalización - Para Ahorrar
+			</div>
+			<div class="card-body">
+				<h5 class="card-title">Formulario</h5>
+				<p class="card-text">Ingresa los datos, presiona calcular y automaticamente se generaran los resultados.</p>
+
+				<form action="{{ path('make_table') }}" method="POST">
+
+					<input type="hidden" name="token" value="{{ csrf_token('make-table') }}"/>
+					<div class="form-row">
+						<div class="form-group col-md-4">
+							<label for="total">Total a ahorrar</label>
+							<input type="number" class="form-control" name="total" id="total" value="{{ total|default('0') }}">
+							{% if errors_total|default(false) %}
+								<div class="is-invalid text-danger">
+									{% for error in errors_total %}
+										<li>{{ error.getMessage }}</li>
+									{% endfor %}
+								</div>
+							{% endif %}
+						</div>
+						<div class="form-group col-md-4">
+							<label for="periodos">Cantidad de períodos en meses</label>
+							<input type="number" class="form-control" name="periodos" id="periodos" value="{{ periodos|default('0') }}">
+							{% if errors_periodos|default(false) %}
+								<div class="is-invalid text-danger">
+									{% for error in errors_periodos %}
+										<li>{{ error.getMessage }}</li>
+									{% endfor %}
+								</div>
+							{% endif %}
+						</div>
+						<div class="form-group col-md-4">
+							<label for="interes">Tasa de interés anual</label>
+							<input type="number" class="form-control" id="interes" name="interes" value="{{ interes|default('0') }}">
+							{% if errors_interes|default(false) %}
+								<div class="is-invalid text-danger">
+									{% for error in errors_interes %}
+										<li>{{ error.getMessage }}</li>
+									{% endfor %}
+								</div>
+							{% endif %}
+						</div>
+
+						<div class="form-group col-md-12 text-center">
+							<button type="submit" class="btn btn-success">Calcular</button>
+						</div>
+					</div>
+				</form>
+
+				{% if table|default(false) %}
+
+					<div class="table-responsive">
+						<table class="table table-hover">
+
+							<thead>
+								<tr>
+									<th>Nº Cuota</th>
+									<th>Capital</th>
+									<th>Interes generado</th>
+									<th>Ahorro</th>
+									<th>Total</th>
+								</tr>
+							</thead>
+
+							<tbody>
+								{% for detail in table %}
+									<tr>
+										<th>{{detail.cuota }}</th>
+										<td>{{detail.capital|format_currency('EUR') }}</td>
+										<td>{{detail.interes|format_currency('EUR') }}</td>
+										<td>{{detail.ahorro|format_currency('EUR') }}</td>
+										<td>{{detail.total|format_currency('EUR') }}</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				{% endif %}
+
+			</div>
+		</div>
+	</div>
+{% endblock %}
